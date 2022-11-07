@@ -1,0 +1,37 @@
+[
+    {
+        "id": "cooldancer313",
+        "platform": "Facebook",
+        "lat": "39.39165", 
+        "lon": "-92.08923",
+        "state": "Missouri"
+    },
+    {
+        "id": "yellowrooster780",
+        "platform": "Tiktok",
+        "lat": "42.76602", 
+        "lon": "-106.18444",
+        "state": "Wyoming"
+    },
+    {
+        "id": "wackysinger200",
+        "platform": "Twitter",
+        "lat": "44.395308466601", 
+        "lon": "-105.645372003392",
+        "state": "Wyoming"
+    },
+    {
+        "id": "rainbowperson249",
+        "platform": "Twitter",
+        "lat": "45.396338607655", 
+        "lon": "-83.828073745298",
+        "state": "Michigan" 
+    },
+    {
+        "id": "yellowplayer257",
+        "platform": "Instagram",
+        "lat": "34.385358848410", 
+        "lon": "-114.546260805919",
+        "state": "California"
+    }
+]

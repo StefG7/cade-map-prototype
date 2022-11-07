@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script src="http://d3js.org/d3.v7.min.js"></script>
+<style type="text/css">
+
+/* On mouse hover, lighten state color */
+path:hover {
+	fill-opacity: .7;
+}
+circle {
+	fill: rgb(217,91,67);
+	fill-opacity: .9;
+}
+circle:hover {
+	/* fill-opacity: .5; */
+	fill:rgb(255, 171, 37);
+    fill-opacity: 1;
+}
+
+/* Style for Custom Tooltip */
+div.tooltip {   
+	position: absolute;           
+	text-align: center;
+	padding: 6px;             
+	font: 18px sans-serif;        
+	background: white;   
+	border: 0px;      
+	border-radius: 8px;           
+	pointer-events: none;    
+}
+        
+/* Legend Font Style */
+body {
+	font: 11px sans-serif;
+	background-color: black;
+}
+        
+/* Legend Position Style */
+.legend {
+	position:absolute;
+	left:800px;
+	top:350px;
+}
+#map {
+	width: 100vw;
+	height: 100vh;
+}
+
+</style>
+</head>
+<body>
+
+	<svg id="map">
+	</svg>
+
+<script type="text/javascript">
+
+	async function loadData () {
+		var nodes = await d3.json('./node-data.json');
+		return [nodes];
+	}
+
+	const data = loadData().then(function(dataset) {
+
+		/*  This visualization was made possible by modifying code provided by: 
+				
+		Michelle Chandra's 'Basic US State Map - D3' 
+		https://gist.github.com/michellechandra/0b2ce4923dc9b5809922
+
+		Malcolm Maclean, tooltips example tutorial
+		http://www.d3noob.org/2013/01/adding-tooltips-to-d3js-graph.html  */
+
+		const node = dataset[0];
+
+		// console.log(node)
+				
+		//Width and height of map
+		var width = window.innerWidth; //1920;
+		var height = window.innerHeight; //1080;
+
+		// D3 Projection
+		var projection = d3.geoAlbersUsa()
+						.translate([width/2, height/2])    // translate to center of screen
+						.scale([1300]);          // scale things down so see entire US
+				
+		// Define path generator
+		var path = d3.geoPath()             // path generator that will convert GeoJSON to SVG paths
+					.projection(projection);  // tell path generator to use albersUsa projection
+
+		//Create SVG element and append map to the SVG
+		var svg = d3.select("#map")
+					.append("svg")
+					.attr("width", width)
+					.attr("height", height);
+				
+		// Append Div for tooltip to SVG
+		var tooltip = d3.select('body').append("div")   
+			.attr("class", "tooltip")               
+			.style("opacity", 0);
+        tooltip.append('text');
+
+		// Load GeoJSON data and merge with states data
+		d3.json("us-states.json").then(function(json) {
+				
+		// Bind the data to the SVG and create one path per GeoJSON feature
+		svg.selectAll("path")
+			.data(json.features)
+			.join("path")
+			.attr("d", path)
+			.style("stroke", "#fff")
+			.style("stroke-width", "1")
+			.style("fill","rgb(113,222,117)")
+
+			// Map the users
+		svg.selectAll("circle")
+			.data(node)
+			.enter()
+			.append("circle")
+			.attr("cx", function(d) {
+				return projection([d.lon, d.lat])[0];
+			})
+			.attr("cy", function(d) {
+				return projection([d.lon, d.lat])[1];
+			})
+			.attr("r", 5)
+			.style('pointer-events','all')
+
+			// Modification of custom tooltip code provided by Malcolm Maclean, "D3 Tips and Tricks" 
+			// http://www.d3noob.org/2013/01/adding-tooltips-to-d3js-graph.html
+			.on("mouseover", function(event,d) { 
+				tooltip.style("left", (event.pageX) + 12 + "px")     
+				.style("top", (event.pageY - 28) + "px")
+				.transition()        
+				.duration(200)      
+				.style("opacity", .8)
+				console.log(d)
+				tooltip.select('text').html("<b>User: </b>" + d.id + "<br>" + "<b>Platform: </b>" + d.platform + "<br>" + "<b>State: </b>" + d.state)
+			})   
+
+			// fade out tooltip on mouse out               
+			.on("mouseout", function(event,d) {       
+				tooltip.transition()        
+				.duration(500)      
+				.style("opacity", 0);    
+			});
+		});
+});
+</script>
+</body>
+</html>
